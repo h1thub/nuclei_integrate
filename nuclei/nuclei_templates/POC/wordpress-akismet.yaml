@@ -1,0 +1,49 @@
+id: wordpress-akismet
+
+info:
+  name: Akismet Anti-spam' Spam Protection Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/akismet/
+  metadata:
+    plugin_namespace: akismet
+    wpscan: https://wpscan.com/plugin/akismet
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/akismet/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/akismet.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a0047304502203dd908bd0d6865299b16c92b7d153626c07949874de4b863bb714c0bc395673e02210095295374963d353627ffe6f232eba4101feeac9315e36ed9cc076ebe3056281b:922c64590222798bb761d5b6d8e72950

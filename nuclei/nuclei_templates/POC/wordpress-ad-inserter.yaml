@@ -1,0 +1,49 @@
+id: wordpress-ad-inserter
+
+info:
+  name: Ad Inserter – Ad Manager & AdSense Ads Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/ad-inserter/
+  metadata:
+    plugin_namespace: ad-inserter
+    wpscan: https://wpscan.com/plugin/ad-inserter
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/ad-inserter/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/ad-inserter.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a00473045022052e8e137ed3f907cc0b391e0e539f9f9908b3e5e9ac6955f6cfe54c2ef0c1b91022100d1b13af55ffecdde22294e9cc07f956218c85f262702b17f286484d982573b24:922c64590222798bb761d5b6d8e72950

@@ -1,0 +1,49 @@
+id: wordpress-gtranslate
+
+info:
+  name: Translate WordPress with GTranslate Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/gtranslate/
+  metadata:
+    plugin_namespace: gtranslate
+    wpscan: https://wpscan.com/plugin/gtranslate
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/gtranslate/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/gtranslate.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a00473045022100adc9852eb41754485b1760b1a76d5f366b8d516854f1667d43bf9d01e315ae96022052f2cd232ad8fea623b64772034bb36d39796cd38c56d3300996d9498b0aa2c7:922c64590222798bb761d5b6d8e72950

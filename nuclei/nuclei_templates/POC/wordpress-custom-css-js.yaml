@@ -1,0 +1,49 @@
+id: wordpress-custom-css-js
+
+info:
+  name: Simple Custom CSS and JS Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/custom-css-js/
+  metadata:
+    plugin_namespace: custom-css-js
+    wpscan: https://wpscan.com/plugin/custom-css-js
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/custom-css-js/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/custom-css-js.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4b0a00483046022100fdcdba08446298aef1f8a0130eb1af1faa7809f120b030d72a43304bb47c55dd022100de2374ef0c17e07ce9774a34273bdf10d42eb37716125ff6e1de63b70f3159f0:922c64590222798bb761d5b6d8e72950

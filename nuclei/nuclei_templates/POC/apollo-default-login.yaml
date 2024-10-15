@@ -1,0 +1,35 @@
+id: apollo-default-login
+
+info:
+  name: Apollo Default Login
+  author: hithub
+  severity: high
+  tags: apollo,default-login
+
+http:
+  - method: POST
+    path:
+      - '{{BaseURL}}/signin'
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: |
+      username={{user}}&password={{pass}}&login-submit=Login
+    attack: pitchfork
+    payloads:
+      user:
+        - apollo
+      pass:
+        - admin
+  
+  - method: GET
+    path: 
+      - '{{BaseURL}}/user'
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"userId":'
+          - '"email":'
+        condition: or

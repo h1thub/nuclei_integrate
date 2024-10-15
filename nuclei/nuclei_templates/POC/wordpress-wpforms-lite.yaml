@@ -1,0 +1,49 @@
+id: wordpress-wpforms-lite
+
+info:
+  name: WPForms – Easy Form Builder for WordPress – Contact Forms, Payment Forms, Surveys, & More Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/wpforms-lite/
+  metadata:
+    plugin_namespace: wpforms-lite
+    wpscan: https://wpscan.com/plugin/wpforms-lite
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/wpforms-lite/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/wpforms-lite.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 490a00463044022061b8263f42a609ead6e5d3049dda311e72e3285ce7817a2acfb67a88a20e9d1c022079a2bfd41eed6522af06d8d994e01f35ef3202ca77ac39c1b151b633562c5e3b:922c64590222798bb761d5b6d8e72950

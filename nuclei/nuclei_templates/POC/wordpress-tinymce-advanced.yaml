@@ -1,0 +1,49 @@
+id: wordpress-tinymce-advanced
+
+info:
+  name: Advanced Editor Tools Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/tinymce-advanced/
+  metadata:
+    plugin_namespace: tinymce-advanced
+    wpscan: https://wpscan.com/plugin/tinymce-advanced
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/tinymce-advanced/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/tinymce-advanced.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a004730450220258375bfc711b7d0b426d85b0845706828f0af5ff37784472c675dc4f08660ca022100a8770e62229a6048ab702e2f1fa61b86b15bdeb781a2a9b3cbb4717363210cc9:922c64590222798bb761d5b6d8e72950

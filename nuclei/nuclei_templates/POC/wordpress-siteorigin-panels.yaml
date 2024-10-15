@@ -1,0 +1,49 @@
+id: wordpress-siteorigin-panels
+
+info:
+  name: Page Builder by SiteOrigin Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/siteorigin-panels/
+  metadata:
+    plugin_namespace: siteorigin-panels
+    wpscan: https://wpscan.com/plugin/siteorigin-panels
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/siteorigin-panels/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/siteorigin-panels.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 490a0046304402204a0a1d4a508b5b469a921306aca7f045a762f9f9da9d123117f3dc613d1af1ba02206cb537b7bff6eb28b58fe6d92c63534c21da210728014b82adcde9a77cd95ed6:922c64590222798bb761d5b6d8e72950

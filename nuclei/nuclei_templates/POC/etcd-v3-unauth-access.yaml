@@ -1,0 +1,27 @@
+id: etcd-v3-unauth-access
+
+info:
+  name: Etcd v3 Unauthorized Access
+  author: hithub
+  severity: high
+  description: Detects etcd v3 API unauthorized access.
+
+requests:
+  - method: POST
+    path:
+      - "{{BaseURL}}/v3/kv/range"
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "key": "Lw=="
+      }
+    matchers:
+      - type: word
+        words:
+          - "cluster_id"
+          - "member_id"
+        condition: and
+      - type: status
+        status:
+          - 200

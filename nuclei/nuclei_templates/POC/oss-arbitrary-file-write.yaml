@@ -1,0 +1,19 @@
+id: oss-arbitrary-file-write
+
+info:
+  name: OSS Arbitrary File Write
+  author: hithub
+  severity: high
+  description: This template checks for arbitrary file write vulnerability in OSS.
+
+requests:
+  - method: PUT
+    path:
+      - "{{BaseURL}}/test.txt"
+    body: |
+      Hello world!
+    matchers:
+      - type: word
+        part: header
+        words:
+          - '200 OK'

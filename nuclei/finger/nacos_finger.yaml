@@ -1,0 +1,25 @@
+id: fingerprinthub-web-fingerprints
+
+info:
+  name: NACOS Fingerprint
+  author: hithub
+  severity: info
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/nacos/"
+
+    matchers:
+      - type: word
+        name: nacos
+        part: title
+        case-insensitive: true
+        words:
+          - 'nacos'
+
+      - type: word
+        name: nacos
+        case-insensitive: true
+        words:
+          - '<title>Nacos</title>'

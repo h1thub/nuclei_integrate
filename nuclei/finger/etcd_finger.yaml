@@ -1,0 +1,17 @@
+id: fingerprinthub-web-fingerprints
+
+info:
+  name: ETCD Fingerprint
+  author: hithub
+  severity: info
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/version"
+
+    matchers:
+      - type: word
+        name: etcd
+        words:
+          - 'etcd'

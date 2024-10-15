@@ -1,0 +1,35 @@
+id: stackstorm-default-login
+
+info:
+  name: StackStorm Default Login
+  author: hithub
+  severity: high
+  tags: stackstorm,default-login
+
+http:
+  - raw:
+      - |
+        POST /auth/tokens HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        Authorization: Basic {{base64(username + ':' + password)}}
+
+    attack: pitchfork
+    payloads:
+      username:
+        - st2admin
+      password:
+        - Ch@ngeMe
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"user":'
+          - '"token":'
+          - '"expiry":'
+        condition: and
+
+      - type: status
+        status:
+          - 201

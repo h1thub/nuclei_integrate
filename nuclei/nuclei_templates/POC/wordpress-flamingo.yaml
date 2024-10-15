@@ -1,0 +1,49 @@
+id: wordpress-flamingo
+
+info:
+  name: Flamingo Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/flamingo/
+  metadata:
+    plugin_namespace: flamingo
+    wpscan: https://wpscan.com/plugin/flamingo
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/flamingo/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/flamingo.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 490a0046304402200605db289d57324600795de375d3e4fbaf85d28aa84d5252cba95731631afa6a02205ca80361fb78d0a49ae9e0f5cf70f99eeac16a2c33a7c97f9f2b032528d9a8e3:922c64590222798bb761d5b6d8e72950

@@ -1,0 +1,49 @@
+id: wordpress-wp-migrate-db
+
+info:
+  name: WP Migrate Lite – WordPress Migration Made Easy Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/wp-migrate-db/
+  metadata:
+    plugin_namespace: wp-migrate-db
+    wpscan: https://wpscan.com/plugin/wp-migrate-db
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/wp-migrate-db/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/wp-migrate-db.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4b0a00483046022100fe0e4d2a035978aae2a238e1612a31305e89e095dd8b992a929fef8ed9320a32022100a14329a3f9f278257d527f3f45001b578a8c07a7bd5f9645be51ac4c621e3024:922c64590222798bb761d5b6d8e72950

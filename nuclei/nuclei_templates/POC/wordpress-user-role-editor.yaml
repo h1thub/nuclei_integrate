@@ -1,0 +1,49 @@
+id: wordpress-user-role-editor
+
+info:
+  name: User Role Editor Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/user-role-editor/
+  metadata:
+    plugin_namespace: user-role-editor
+    wpscan: https://wpscan.com/plugin/user-role-editor
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/user-role-editor/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/user-role-editor.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a00473045022040e8ad204a6047176a8e066293b40de579dbd26aa4fcaa37fc0536ae2ced3f7e022100ca527cff081130c4f8120a9e913dc6f52de62719c3149d30550d2894c74a44fa:922c64590222798bb761d5b6d8e72950
