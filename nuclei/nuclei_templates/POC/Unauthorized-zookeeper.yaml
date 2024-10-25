@@ -1,0 +1,25 @@
+id: Unauthorized-zookeeper
+
+info:
+  name: Apache ZooKeeper - Unauthenticated Access
+  author: hithub
+  severity: high
+  description: Apache ZooKeeper was able to be accessed without any required authentication.
+  tags: network,zookeeper,unauth,exposure,tcp
+
+tcp:
+  - inputs:
+      - data: "0000002d0000000000000000000000000000271000000000000000000000001000000000000000000000000000000000000000000e0000000100000008000000012f00"
+        type: hex
+
+    host:
+      - "{{Hostname}}"
+    port: 2181
+
+    matchers:
+      - type: word
+        words:
+          - "zookeeper"
+          - "config"
+          - "consumers"
+        condition: or

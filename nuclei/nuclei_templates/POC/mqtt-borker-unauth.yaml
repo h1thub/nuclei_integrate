@@ -1,0 +1,21 @@
+id: mqtt-borker-unauth
+
+info:
+  name: MQTT Borker Unauth
+  author: hithub
+  severity: high
+  tags: network,broker,mqtt,unauth,misconfig,tcp
+tcp:
+  - inputs:
+      - data: "100c00044d5154540402003c0000"
+        type: hex
+
+    host:
+      - "{{Hostname}}"
+    port: 1883
+
+    matchers:
+      - type: word
+        encoding: hex
+        words:
+          - "20020000"
