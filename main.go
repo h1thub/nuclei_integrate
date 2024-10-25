@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"net/url"
 )
 
 type Result struct {
@@ -355,18 +356,30 @@ func main() {
 		return
 	}
 
-	for target, results := range allResults {
-		tempFile, err := matchTemplates(target, results, templatesDir)
-		if err != nil {
-			fmt.Printf("Error matching templates for target %s: %s\n", target, err)
-			continue
+	for _, results := range allResults {
+		for _, result := range results {
+			// 假设 result.URL 是你想要提取的 URL
+			parsedURL, err := url.Parse(result.URL)
+			if err != nil {
+				fmt.Printf("Error parsing URL %s: %s\n", result.URL, err)
+				continue
+			}
+			
+			// 只保留主机部分
+			target := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
+	
+			tempFile, err := matchTemplates(target, results, templatesDir)
+			if err != nil {
+				fmt.Printf("Error matching templates for target %s: %s\n", target, err)
+				continue
+			}
+			if tempFile == "" {
+				continue
+			}
+	
+			wg.Add(1)
+			go scanWithTemplates(target, tempFile, &wg, sem, resultsFile)
 		}
-		if tempFile == "" {
-			continue
-		}
-
-		wg.Add(1)
-		go scanWithTemplates(target, tempFile, &wg, sem, resultsFile)
 	}
 
 	wg.Wait()
