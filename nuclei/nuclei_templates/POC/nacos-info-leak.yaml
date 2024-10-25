@@ -20,6 +20,7 @@ http:
   - method: GET
     path:
       - "{{BaseURL}}/v1/cs/configs?export=true&group=&tenant=&appName=&ids=&dataId="
+      - "{{BaseURL}}/nacos/v1/cs/configs?export=true&group=&tenant=&appName=&ids=&dataId="
 
     matchers:
       - type: dsl
